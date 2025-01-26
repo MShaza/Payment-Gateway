@@ -12,14 +12,9 @@ struct Transaction
     double transactionAmount;
     std::time_t transactionTimeStamp; 
 };
-void transactionRecipt( Transaction &tranxData){
-        std::cout<<"Transaction Id                  "<<tranxData.transactionId;
-        std::cout<<"Transaction Amount              "<<tranxData.transactionAmount;
-        std::cout<<"Transaction Status              "<<tranxData.transactionStatus;
-        std::cout<<"Transaction Time Stamp          "<<tranxData.transactionTimeStamp;     
-
-}
-
+void transactionRecipt(Transaction &tranxData);
+Transaction generateTransaction(std::string cardNumber, double transctionAmount, std::string &encryptionkey);
+void processTransaction(Transaction &tranx, std::string decryptionKey);
 
 
 
