@@ -14,7 +14,7 @@ struct Transaction
 };
 void transactionRecipt(Transaction &tranxData);
 Transaction generateTransaction(std::string cardNumber, double transctionAmount, std::string &encryptionkey);
-void processTransaction(Transaction &tranx, std::string decryptionKey);
+void processTransactions(Transaction &tranx, std::string decryptionKey);
 
 
 

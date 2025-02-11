@@ -28,7 +28,7 @@ public:
     void run();
 private:
     void doAccept();
-    void handleRequest(boost::asio::ip::tcp::socket& _socket);
+    void handleRequest(boost::asio::ip::tcp::socket _socket);
     std::string initiateTransaction(property_tree::ptree &jsonBody);
     std::string processTransaction(property_tree::ptree &jsonBody);
 

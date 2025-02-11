@@ -190,6 +190,30 @@ src/Encryption.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Encryption.dir/build.make CMakeFiles/Encryption.dir/src/Encryption.cpp.s
 .PHONY : src/Encryption.cpp.s
 
+src/Server.o: src/Server.cpp.o
+.PHONY : src/Server.o
+
+# target to build an object file
+src/Server.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PaymentGateway.dir/build.make CMakeFiles/PaymentGateway.dir/src/Server.cpp.o
+.PHONY : src/Server.cpp.o
+
+src/Server.i: src/Server.cpp.i
+.PHONY : src/Server.i
+
+# target to preprocess a source file
+src/Server.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PaymentGateway.dir/build.make CMakeFiles/PaymentGateway.dir/src/Server.cpp.i
+.PHONY : src/Server.cpp.i
+
+src/Server.s: src/Server.cpp.s
+.PHONY : src/Server.s
+
+# target to generate assembly for a file
+src/Server.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/PaymentGateway.dir/build.make CMakeFiles/PaymentGateway.dir/src/Server.cpp.s
+.PHONY : src/Server.cpp.s
+
 src/transactionHandler.o: src/transactionHandler.cpp.o
 .PHONY : src/transactionHandler.o
 
@@ -230,6 +254,9 @@ help:
 	@echo "... src/Encryption.o"
 	@echo "... src/Encryption.i"
 	@echo "... src/Encryption.s"
+	@echo "... src/Server.o"
+	@echo "... src/Server.i"
+	@echo "... src/Server.s"
 	@echo "... src/transactionHandler.o"
 	@echo "... src/transactionHandler.i"
 	@echo "... src/transactionHandler.s"

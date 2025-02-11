@@ -1,15 +1,21 @@
-#include "transaction.h"
-int main(){
-    Transaction tranx;
-    std::string key = "paymentgateway";
-    std::string cardNumber;
-    double transactionAmount;
-    std::cout<<"Welcome to the payment gateaway system"<<std::endl;
-    std::cout<<"Enter Your Card Number"<<std::endl;
-    std::cin>>cardNumber;
-    std::cout<<"Enter Transaction Amount"<<std::endl;
-    std::cin>>transactionAmount;
-    tranx = generateTransaction(cardNumber,transactionAmount, key);
-    processTransaction(tranx, key);
+#include "Server.h"
+#include "Transaction.h"
 
+int main() {
+    try {
+        // Create Boost ASIO IO Context
+        boost::asio::io_context io_context;
+
+        // Start the server on port 8080
+        std::shared_ptr<Server> server = std::make_shared<Server>(io_context, 8080);
+        server->run();
+
+        // Run the event loop (keeps the server running)
+        io_context.run();
+
+    } catch (const std::exception& e) {
+        std::cerr << "Server error: " << e.what() << std::endl;
+    }
+    
+    return 0;
 }

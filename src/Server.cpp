@@ -17,15 +17,16 @@ void Server::run(){
  * Notes        :   Accept the incomming clients
 */
 void Server::doAccept(){
-    _acceptor.async_accept([&](boost::system::error_code ec, boost::asio::ip::tcp::socket _socket){
-            if(!ec){
-                handleRequest(_socket);
-            }
-            else{
-                doAccept();
-            }
+    auto self = shared_from_this();  // Capture `Server` instance properly
 
-    });   
+    _acceptor.async_accept(
+        [self](boost::system::error_code ec, boost::asio::ip::tcp::socket socket) mutable {
+            if (!ec) {
+                // Ensure the socket is properly moved into `handleRequest`
+                self->handleRequest(std::move(socket));
+            }
+            self->doAccept();  //Continue accepting new connections
+        });
 } 
 /**
  * functionName :   handleRequest
@@ -33,63 +34,105 @@ void Server::doAccept(){
  * Return Value :   None
  * Notes        :   recieve the reaquest recieved by the server
 */
-void Server::handleRequest(asio::ip::tcp::socket &_socket){
-    auto self =  shared_from_this();
-    //to mange http request wee nedd buffer form beast
-    beast::flat_buffer vBuffer;
-    //now we read the data sen dfrom teh client
-    beast::http::async_read(_socket, vBuffer,isRequest,[self, this, _socket = std::move(_socket)](boost::system::error_code ec, std::size_t bytesTransferre){
-        // check if there are no error
-        if(!ec){
-            std::string responseBody;
+void Server::handleRequest(boost::asio::ip::tcp::socket socket) {
+    auto self = shared_from_this();
+    auto sharedSocket = std::make_shared<boost::asio::ip::tcp::socket>(std::move(socket));
+    auto buffer = std::make_shared<beast::flat_buffer>();
+    auto request = std::make_shared<http::request<http::string_body>>();
+    auto response = std::make_shared<http::response<http::string_body>>();
+
+    std::cout << "[DEBUG] Waiting for client request..." << std::endl;
+
+    http::async_read(*sharedSocket, *buffer, *request,
+        [self, sharedSocket, buffer, request, response](boost::system::error_code ec, std::size_t bytesTransferred) mutable {
+            if (ec) {
+                std::cerr << "[ERROR] Failed to read request: " << ec.message() << std::endl;
+                return;
+            }
+
+            std::cout << "[DEBUG] Received request: " << request->target() << std::endl;
+
             property_tree::ptree jsonBody;
-            //get teh json file
-            property_tree::read_json(isRequest.body(), jsonBody);
-            http::response<http::string_body> response;
-            try{
-                 // check the API & method type
-                  if((isRequest.target() == "/payment/initiate") && (isRequest.method() == http::verb::post) ){
-                    // Initiate function call
-                    responseBody = initiateTransaction(jsonBody);
-                    response.result(http::status::ok);
-                    }
-                    else if((isRequest.target() == "/payment/process") && (isRequest.method() == http::verb::post) ){
-                    //call the function
-                    response.result(http::status::ok);
-                    }
-                    else {
-                        responseBody = "{\"status\":\"error\", \"message\":\"Invalid API endpoint\"}";
-                        response.result(http::status::not_found);
-                    }
+            std::string responseBody;
+
+            try {
+                std::stringstream ss(request->body());
+                property_tree::read_json(ss, jsonBody);
+
+                if (request->target() == "/payment/initiate" && request->method() == http::verb::post) {
+                    std::cout << "[DEBUG] Processing /payment/initiate request..." << std::endl;
+                    responseBody = self->initiateTransaction(jsonBody);
+                    response->result(http::status::ok);
+                } 
+                else if (request->target() == "/payment/process" && request->method() == http::verb::post) {
+                    std::cout << "[DEBUG] Processing /payment/process request..." << std::endl;
+                    responseBody = self->processTransaction(jsonBody);
+                    response->result(http::status::ok);
+                } 
+                else {
+                    std::cerr << "[ERROR] Invalid API endpoint" << std::endl;
+                    responseBody = "{\"status\":\"error\", \"message\":\"Invalid API endpoint\"}";
+                    response->result(http::status::not_found);
                 }
-            catch(const property_tree::ptree_error &e){
+            } 
+            catch (const property_tree::ptree_error&) {
+                std::cerr << "[ERROR] Invalid JSON format" << std::endl;
                 responseBody = "{\"status\":\"error\", \"message\":\"Invalid JSON format\"}";
-                response.result(http::status::bad_request);  // 400 Bad Request
-            }
-            catch (std::exception &e){
+                response->result(http::status::bad_request);
+            } 
+            catch (const std::exception& e) {
+                std::cerr << "[ERROR] Exception in request processing: " << e.what() << std::endl;
                 responseBody = "{\"status\":\"error\", \"message\":\"" + std::string(e.what()) + "\"}";
-                response.result(http::status::internal_server_error);  // 500 Internal Server Error
-                // send response functrion
+                response->result(http::status::internal_server_error);
             }
-            response.set(http::field::content_type, "application/json");
-            response.body() = responseBody;
-            response.prepare_payload();
-            http::async_write(socket, response, [socket =  std::move(socket)](boost::system::error_code, std::size_t){});
-        }
-    });
+
+            response->set(http::field::content_type, "application/json");
+            response->body() = responseBody;
+            response->prepare_payload();
+
+            std::cout << "[DEBUG] Sending response..." << std::endl;
+
+            http::async_write(*sharedSocket, *response,
+                [sharedSocket, response](boost::system::error_code ec, std::size_t) mutable {
+                    if (ec) {
+                        std::cerr << "[ERROR] Failed to send response: " << ec.message() << std::endl;
+                    } else {
+                        std::cout << "[DEBUG] Response sent successfully!" << std::endl;
+                    }
+                    sharedSocket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
+                });
+        });
 }
+ 
     /**
  * functionName :   initiateTransaction
  * Parameters   :   boost beat property_tree object
  * Return Value :   string response
- * Notes        :   create the trabsaction object and genertae trabnsaction Id
+ * Notes        :   create the transaction object and genertae transaction Id
 */
 std::string Server::initiateTransaction(property_tree::ptree &jsonBody){
     //pasrse the JSON
     std::string key = "paymentgateway";
-    std::string carßdNumber =  jsonBody.get<std::string>("card_number");
+    std::string cardNumber =  jsonBody.get<std::string>("card_number");
     double paymentAmount = jsonBody.get<double>("payment_amount");
-    Transaction tranx = generateTransaction(carßdNumber, paymentAmount,key);// create transaction
+    Transaction tranx = generateTransaction(cardNumber, paymentAmount,key);// create transaction
     transactions[tranx.transactionId] = tranx;
     return "{\"status\":\"success\", \"transaction_id\":\"" + tranx.transactionId + "\"}";
+}
+    /**
+ * functionName :   processTransaction
+ * Parameters   :   boost beat property_tree object
+ * Return Value :   string response
+ * Notes        :   proecess the transaction
+*/
+std::string Server::processTransaction(property_tree::ptree &jsonBody){
+    std::string key = "paymentgateway";
+    std::string transactionId = jsonBody.get<std::string>("transaction_id");
+    if(transactions.find(transactionId) != transactions.end()){
+        Transaction &tranx = transactions[transactionId];
+        std::string key = "paymentgateway";
+        processTransactions(tranx, key);
+    return "{\"status\":\"" + tranx.transactionStatus + "\", \"transaction_id\":\"" + tranx.transactionId + "\"}";
+    } 
+    return "{\"status\":\"error\", \"message\":\"Transaction not found\"}";
 }

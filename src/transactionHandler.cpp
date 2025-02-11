@@ -36,7 +36,7 @@ Transaction generateTransaction(std::string cardNumber, double transctionAmount,
  * Return Value :   None
  * Notes        :   process the transaction with dummy logic
 */
-void processTransaction(Transaction &tranx, std::string decryptionKey){
+void processTransactions(Transaction &tranx, std::string decryptionKey){
     tranx.transactionStatus =  (tranx.transactionAmount <= 1000.00) ? "DENIED": "SUCCESSFUL"; // Dummy login, replace with the actual one.
     tranx.transactionCardNumber =  Encryption::decryptData(tranx.transactionCardNumber, decryptionKey);
     transactionRecipt(tranx);
