@@ -1,5 +1,6 @@
 #include "Server.h"
 #include "Encryption.h"
+#include "Database.h"
 
     Server::Server(asio::io_context& io_context, int port)
     : _acceptor(io_context, boost::asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port)),
@@ -112,12 +113,18 @@ void Server::handleRequest(boost::asio::ip::tcp::socket socket) {
 */
 std::string Server::initiateTransaction(property_tree::ptree &jsonBody){
     //pasrse the JSON
-    std::string key = "paymentgateway";
+    //std::string key = "paymentgateway";
+    std::cout << "[DEBUG - initiateTransaction] Enter function"<< std::endl;
     std::string cardNumber =  jsonBody.get<std::string>("card_number");
+    std::cout << "[DEBUG - initiateTransaction] CARD NUMBER ["<<cardNumber <<"]"<< std::endl;
     double paymentAmount = jsonBody.get<double>("payment_amount");
-    Transaction tranx = generateTransaction(cardNumber, paymentAmount,key);// create transaction
-    transactions[tranx.transactionId] = tranx;
+    Transaction tranx = generateTransaction(cardNumber, paymentAmount);// create transaction
+    bool transactionResult = Database::insertTransaction(tranx);
+    if(!transactionResult){
+        return "{\"status\":\"error\", \"transaction_id\":\"" + tranx.transactionId + "\"}";
+    }
     return "{\"status\":\"success\", \"transaction_id\":\"" + tranx.transactionId + "\"}";
+    std::cout << "[DEBUG - initiateTransaction] Exit function successfully"<< std::endl;
 }
     /**
  * functionName :   processTransaction
@@ -126,12 +133,13 @@ std::string Server::initiateTransaction(property_tree::ptree &jsonBody){
  * Notes        :   proecess the transaction
 */
 std::string Server::processTransaction(property_tree::ptree &jsonBody){
-    std::string key = "paymentgateway";
-    std::string transactionId = jsonBody.get<std::string>("transaction_id");
-    if(transactions.find(transactionId) != transactions.end()){
-        Transaction &tranx = transactions[transactionId];
+    //std::string key = "paymentgateway";
+    const std::string transactionId = jsonBody.get<std::string>("transaction_id");
+    Transaction tranx = Database::getTransactionById(transactionId);
+    if(!tranx.transactionId.empty()){ 
         std::string key = "paymentgateway";
-        processTransactions(tranx, key);
+        const std::string trans_id =  processTransactions(tranx);
+        bool transaction_status = Database::updateStatus(tranx);
     return "{\"status\":\"" + tranx.transactionStatus + "\", \"transaction_id\":\"" + tranx.transactionId + "\"}";
     } 
     return "{\"status\":\"error\", \"message\":\"Transaction not found\"}";

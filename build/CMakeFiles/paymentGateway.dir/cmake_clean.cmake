@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/PaymentGateway.dir/main.cpp.o"
   "CMakeFiles/PaymentGateway.dir/main.cpp.o.d"
+  "CMakeFiles/PaymentGateway.dir/src/Database.cpp.o"
+  "CMakeFiles/PaymentGateway.dir/src/Database.cpp.o.d"
   "CMakeFiles/PaymentGateway.dir/src/Server.cpp.o"
   "CMakeFiles/PaymentGateway.dir/src/Server.cpp.o.d"
   "CMakeFiles/PaymentGateway.dir/src/transactionHandler.cpp.o"

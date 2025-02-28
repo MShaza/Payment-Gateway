@@ -6,7 +6,10 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/include",
                 "/opt/homebrew/include/boost",
-                "/opt/homebrew/Cellar/boost/1.87.0/include"
+                "/opt/homebrew/Cellar/boost/1.87.0/include",
+                "/opt/homebrew/include/mysql",
+                "/opt/homebrew/opt/mysql-connector-c++/include/mysqlx",
+                "/opt/homebrew/opt/openssl@3/include"
             ],
             "defines": [],
             "macFrameworkPath": [

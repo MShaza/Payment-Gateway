@@ -2791,4 +2791,19 @@ CMakeFiles/PaymentGateway.dir/main.cpp.o: \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__filesystem/u8path.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/map \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__tree \
-  /Users/muhammadshazab/Documents/C++\ Projects/PaymentGateway/include/Transaction.h
+  /Users/muhammadshazab/Documents/C++\ Projects/PaymentGateway/include/Transaction.h \
+  /Users/muhammadshazab/Documents/C++\ Projects/PaymentGateway/include/Database.h \
+  /opt/homebrew/include/mysql/mysql.h \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/stdbool.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include/stdbool.h \
+  /opt/homebrew/include/mysql/field_types.h \
+  /opt/homebrew/include/mysql/my_list.h \
+  /opt/homebrew/include/mysql/mysql_com.h \
+  /opt/homebrew/include/mysql/my_command.h \
+  /opt/homebrew/include/mysql/my_compress.h \
+  /opt/homebrew/include/mysql/mysql/udf_registration_types.h \
+  /opt/homebrew/include/mysql/mysql/client_plugin.h \
+  /opt/homebrew/include/mysql/mysql/plugin_auth_common.h \
+  /opt/homebrew/include/mysql/mysql_version.h \
+  /opt/homebrew/include/mysql/mysql_time.h \
+  /opt/homebrew/include/mysql/errmsg.h

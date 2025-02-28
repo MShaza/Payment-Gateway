@@ -13,8 +13,8 @@ struct Transaction
     std::time_t transactionTimeStamp; 
 };
 void transactionRecipt(Transaction &tranxData);
-Transaction generateTransaction(std::string cardNumber, double transctionAmount, std::string &encryptionkey);
-void processTransactions(Transaction &tranx, std::string decryptionKey);
+Transaction generateTransaction(std::string cardNumber, double transctionAmount);
+const std::string processTransactions(Transaction &tranx);
 
 
 
