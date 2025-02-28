@@ -18,6 +18,7 @@ void Server::run(){
  * Notes        :   Accept the incomming clients
 */
 void Server::doAccept(){
+     std::cout << "[DEBUG - doAccept] Enter function"<<std::endl;
     auto self = shared_from_this();  // Capture `Server` instance properly
 
     _acceptor.async_accept(
@@ -28,6 +29,7 @@ void Server::doAccept(){
             }
             self->doAccept();  //Continue accepting new connections
         });
+        std::cout << "[DEBUG - doAccept] Exit function"<<std::endl;
 } 
 /**
  * functionName :   handleRequest
@@ -36,6 +38,7 @@ void Server::doAccept(){
  * Notes        :   recieve the reaquest recieved by the server
 */
 void Server::handleRequest(boost::asio::ip::tcp::socket socket) {
+     std::cout << "[DEBUG - handleRequest] Enter function"<<std::endl;
     auto self = shared_from_this();
     auto sharedSocket = std::make_shared<boost::asio::ip::tcp::socket>(std::move(socket));
     auto buffer = std::make_shared<beast::flat_buffer>();
@@ -103,6 +106,7 @@ void Server::handleRequest(boost::asio::ip::tcp::socket socket) {
                     sharedSocket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
                 });
         });
+        std::cout << "[DEBUG - handleRequest] Exit function"<<std::endl;
 }
  
     /**
@@ -134,6 +138,7 @@ std::string Server::initiateTransaction(property_tree::ptree &jsonBody){
 */
 std::string Server::processTransaction(property_tree::ptree &jsonBody){
     //std::string key = "paymentgateway";
+    std::cout << "[DEBUG - processTransaction] Enter function"<<std::endl;
     const std::string transactionId = jsonBody.get<std::string>("transaction_id");
     Transaction tranx = Database::getTransactionById(transactionId);
     if(!tranx.transactionId.empty()){ 
@@ -143,4 +148,5 @@ std::string Server::processTransaction(property_tree::ptree &jsonBody){
     return "{\"status\":\"" + tranx.transactionStatus + "\", \"transaction_id\":\"" + tranx.transactionId + "\"}";
     } 
     return "{\"status\":\"error\", \"message\":\"Transaction not found\"}";
+     std::cout << "[DEBUG - processTransaction] Exit function"<<std::endl;
 }

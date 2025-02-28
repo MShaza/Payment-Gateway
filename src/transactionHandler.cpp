@@ -46,9 +46,11 @@ Transaction generateTransaction(std::string cardNumber, double transctionAmount)
  * Notes        :   process the transaction with dummy logic
 */
 const std::string processTransactions(Transaction &tranx){
+    std::cout << "[DEBUG - processTransactions] Enter function"<<std::endl;
     tranx.transactionStatus =  (tranx.transactionAmount <= 1000.00) ? "DENIED": "SUCCESSFUL"; // Dummy login, replace with the actual one.
     tranx.transactionCardNumber =  Encryption::decryptData(tranx.transactionCardNumber);
     transactionRecipt(tranx);
+    std::cout << "[DEBUG - processTransactions] Exit function"<<std::endl;
     return tranx.transactionStatus;
 
 }
@@ -59,9 +61,11 @@ const std::string processTransactions(Transaction &tranx){
  * Notes        :   genertae the recipt of transaction
 */
 void transactionRecipt(Transaction &tranxData){
+     std::cout << "[DEBUG - processTransactions] Enter function"<<std::endl;
         std::cout<<"Transaction Id                  "<<tranxData.transactionId<<std::endl;
         std::cout<<"Transaction Amount              "<<tranxData.transactionAmount<<std::endl;
         std::cout<<"Transaction Status              "<<tranxData.transactionStatus<<std::endl;
-        std::cout<<"Transaction Time Stamp          "<<tranxData.transactionTimeStamp<<std::endl;     
+        std::cout<<"Transaction Time Stamp          "<<tranxData.transactionTimeStamp<<std::endl;    
+         std::cout << "[DEBUG - processTransactions] Exit function"<<std::endl; 
 
 }

@@ -12,6 +12,7 @@
  * Notes        :   Generate key for encryption
 */
 void Encryption::generateKeys(){
+    std::cout << "[DEBUG - generateKeys] Enter function"<<std::endl;
     const int KEY_LENGTH = 32; // AES-256
     unsigned char key[KEY_LENGTH];
     if (RAND_bytes(key, KEY_LENGTH) != 1) {
@@ -21,7 +22,7 @@ void Encryption::generateKeys(){
     std::ofstream keyFile("encryption_key.bin", std::ios::binary);
     keyFile.write(keyGenerated.data(), keyGenerated.size());
     keyFile.close();
-
+     std::cout << "[DEBUG - generateKeys] Exit function"<<std::endl;
 }
     /**
  * functionName :   getKey
@@ -30,6 +31,7 @@ void Encryption::generateKeys(){
  * Notes        :   perform the encryption on the given data
 */
 std::string Encryption::getKey(bool encryption){
+    std::cout << "[DEBUG - getKey] Enter function"<<std::endl;
     std::string key;
     // check if file exist
     std::string fileName = "encryption_key.bin";
@@ -44,6 +46,7 @@ std::string Encryption::getKey(bool encryption){
     std::ifstream keyFile("encryption_key.bin", std::ios::binary);
     key =std::string((std::istreambuf_iterator<char>(keyFile)), std::istreambuf_iterator<char>());
     keyFile.close(); 
+    std::cout << "[DEBUG - getKey] Exit function"<<std::endl;
     return key;
 }
     /**
